@@ -34,103 +34,77 @@ The analysis is based on historical payroll data, and all calculations are made 
 
 ## Data Preparation
 
-`library(tidyverse)`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`library(lubridate)`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`library(scales)`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`library(DT)`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
+```{r}
+#|message: false
+#|warning: false
+library(readr)
+library(stringr)
+library(ggplot2)
+library(tidyverse)
+library(lubridate)
+library(scales) 
+library(DT)
+```
 
 ## Load Data
 
-`payroll_data <- read_csv("nyc_payroll_data.csv")`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
+```{r}
+#|message: false
+#|warning: false
+payroll_data <- read_csv("C:/Users/goyal/OneDrive/Documents/MP01/data/mp01/nyc_payroll_export.csv")
+```
 
 ## Inspect Data
 
-`payroll_data <- payroll_data %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
+```{r}
+payroll_data <- payroll_data %>%
+mutate(
+agency_name = str_to_title(agency_name),
+last_name = str_to_title(last_name),
+first_name = str_to_title(first_name),
+work_location_borough = str_to_title(work_location_borough),
+title_description = str_to_title(title_description),
+leave_status = str_to_title(leave_status_as_of_june_30)
+)
+```
 
-`mutate(`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
+```{r}
 
-`agency_name = str_to_title(agency_name),`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`last_name = str_to_title(last_name),`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`first_name = str_to_title(first_name),`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`work_location_borough = str_to_title(work_location_borough),`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`title_description = str_to_title(title_description),`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`leave_status = str_to_title(leave_status_as_of_june_30)`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`)`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`payroll_data <- payroll_data %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`mutate(salary = as.numeric(salary),`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`reg_hours = as.numeric(reg_hours),`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`ot_hours = as.numeric(ot_hours))`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`glimpse(payroll_data)`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-![](images/clipboard-2596235769.png){width="727"}
+payroll_data <- payroll_data %>% 
+mutate(base_salary = as.numeric(base_salary), 
+reg_hours = as.numeric(regular_hours), 
+ot_hours = as.numeric(ot_hours))
+glimpse(payroll_data)
+```
 
 # Mayor Eric Adams Payroll Analysis
 
 ## Mayor Eric Adams's Salary
 
-`mayor_data <- payroll_data %>%`
-
-`filter(str_detect( first_name, "Eric") & str_detect( last_name , "Adams")) %>%`
-
-`select( fiscal_year , title_description , agency_name , base_salary ) %>%`
-
-`arrange( fiscal_year )`
-
-`mayor_data %>%`
-
-`mutate( base_salary = dollar( base_salary )) %>%`
-
-`datatable(options = list( searching = FALSE, paging = FALSE, info = FALSE`
-
-`))`
-
-![](images/clipboard-3743588534.png)
+```{r}
+mayor_data <- payroll_data %>%
+filter(str_detect( first_name, "Eric") & str_detect( last_name , "Adams")) %>%
+select( fiscal_year , title_description , agency_name , base_salary ) %>%
+  arrange( fiscal_year )
+mayor_data %>%
+mutate( base_salary = dollar( base_salary )) %>%
+datatable(options = list( searching = FALSE, paging = FALSE, info = FALSE))
+```
 
 ## Calculation of Total Compensation
 
-`payroll_data <- payroll_data %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
+```{r}
+payroll_data <- payroll_data %>%
+mutate (total_compensation = case_when(
+pay_basis == "per Annum" ~ base_salary,
+pay_basis == "per Hour" ~ base_salary * regular_hours + (base_salary * 1.5 * ot_hours),
+pay_basis == "per Day" ~ base_salary * (regular_hours / 7.5),TRUE ~ base_salary ) )
 
-`mutate (`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`total_compensation = case_when(`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`pay_basis == "per Annum" ~ base_salary,`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`pay_basis == "per Hour" ~ base_salary * regular_hours + (base_salary * 1.5 * ot_hours),`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`pay_basis == "per Day" ~ base_salary * (regular_hours / 7.5),`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`TRUE ~ base_salary ) )`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`datatable(`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`payroll_data %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`select(first_name, last_name, agency_name, title_description, pay_basis, base_salary, regular_hours, ot_hours, total_compensation) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`arrange(desc(total_compensation)) %>% s`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`lice_head(n = 10),`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`options = list(scrollX = TRUE)`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`)`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-![](images/clipboard-60499506.png)
+datatable(payroll_data %>%
+select(first_name, last_name, agency_name, title_description, pay_basis, base_salary, regular_hours, ot_hours, total_compensation) %>%
+arrange(desc(total_compensation)) %>% 
+slice_head(n = 10),options = list(scrollX = TRUE))
+```
 
 # Key Payroll Analysis
 
@@ -138,137 +112,86 @@ This section answers critical payroll-related questions using **NYC Payroll Dat
 
 1.  **Which job title has the highest base rate of pay? (If needed, assume a standard 2000-hour work year and no overtime.)**
 
-`highest_base_rate <- payroll_data %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`mutate(hourly_rate = base_salary / 2000) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`arrange(desc(hourly_rate)) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`select(title_description, agency_name, hourly_rate) %>% slice(1)`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`highest_base_rate`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-**Result:**
-
-![](images/clipboard-2226262486.png)
+```{r}
+highest_base_rate <- payroll_data %>%
+mutate(hourly_rate = base_salary / 2000) %>%
+arrange(desc(hourly_rate)) %>%
+select(title_description, agency_name, hourly_rate) %>% slice(1)
+highest_base_rate
+```
 
 2.  **Which individual & in what year had the single highest city total payroll (regular and overtime combined)?**
 
-`highest_earning_employee <- payroll_data %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`mutate(total_compensation = base_salary + total_ot_paid + total_other_pay) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`arrange(desc(total_compensation)) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`select(fiscal_year, first_name, last_name, title_description, agency_name, total_compensation) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`slice(1)`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`print(highest_earning_employee)`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-**Result:**
-
-![](images/clipboard-2541179802.png)
+```{r}
+highest_earning_employee <- payroll_data %>%
+mutate(total_compensation = base_salary + total_ot_paid + total_other_pay) %>%
+arrange(desc(total_compensation)) %>%
+select(fiscal_year, first_name, last_name, title_description, agency_name, total_compensation) %>%
+slice(1)
+print(highest_earning_employee)
+```
 
 3.  **Which individual worked the most overtime hours in this data set?**
 
-`most_overtime_employee <- payroll_data %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`arrange(desc(ot_hours)) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`select(fiscal_year, first_name, last_name, title_description, agency_name, ot_hours) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`slice(1)`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`print(most_overtime_employee)`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-**Result:**
-
-![](images/clipboard-3542957647.png)
+```{r}
+most_overtime_employee <- payroll_data %>%
+arrange(desc(ot_hours)) %>%
+select(fiscal_year, first_name, last_name, title_description, agency_name, ot_hours) %>%
+slice(1)
+print(most_overtime_employee)
+```
 
 4.  **Which agency has the highest average total annual payroll (base and overtime pay per employee)?**
 
-`highest_avg_payroll_agency <- payroll_data %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`group_by(agency_name) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`summarize(avg_total_pay = mean(base_salary + total_ot_paid + total_other_pay, na.rm = TRUE)) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`arrange(desc(avg_total_pay)) %>% slice(1)`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`highest_avg_payroll_agency`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-**Result:**
-
-![](images/clipboard-174501791.png)
+```{r}
+highest_avg_payroll_agency <- payroll_data %>%
+group_by(agency_name) %>%
+summarize(avg_total_pay = mean(base_salary + total_ot_paid + total_other_pay, na.rm = TRUE)) %>%
+arrange(desc(avg_total_pay)) %>% slice(1)
+highest_avg_payroll_agency
+```
 
 5.  **Which agency has the most employees on payroll in each year?**
 
-`most_employees_per_year <- payroll_data %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`group_by(fiscal_year, agency_name) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`summarize(employee_count = n()) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`arrange(fiscal_year, desc(employee_count)) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`group_by(fiscal_year) %>% slice(1)`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`most_employees_per_year`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-**Result:**
-
-![](images/clipboard-196844467.png)
+```{r}
+most_employees_per_year <- payroll_data %>%
+group_by(fiscal_year, agency_name) %>%
+summarize(employee_count = n()) %>%
+arrange(fiscal_year, desc(employee_count)) %>%
+group_by(fiscal_year) %>% slice(1)
+most_employees_per_year
+```
 
 6.  **Which agency has the highest overtime usage (compared to regular hours)?**
 
-`highest_overtime_usage <- payroll_data %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`mutate(overtime_ratio = ot_hours / (2000 + ot_hours)) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`group_by(agency_name) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`summarize(avg_overtime_ratio = mean(overtime_ratio, na.rm = TRUE)) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`arrange(desc(avg_overtime_ratio)) %>% slice(1)`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`highest_overtime_usage`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-**Result:**
-
-![](images/clipboard-3117463055.png)
+```{r}
+highest_overtime_usage <- payroll_data %>%
+mutate(overtime_ratio = ot_hours / (2000 + ot_hours)) %>%
+group_by(agency_name) %>%
+summarize(avg_overtime_ratio = mean(overtime_ratio, na.rm = TRUE)) %>%
+arrange(desc(avg_overtime_ratio)) %>% slice(1)
+highest_overtime_usage
+```
 
 7.  **What is the average salary of employees who work outside the five boroughs? (That is, whose work_location_borough is not one of the five counties.)**
 
-`avg_salary_outside_nyc <- payroll_data %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`filter(!work_location_borough %in% c("Manhattan", "Brooklyn", "Queens", "Bronx", "Staten Island")) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`summarize(avg_salary = mean(base_salary, na.rm = TRUE))`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`avg_salary_outside_nyc`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-**Result:**
-
-![](images/clipboard-3155006546.png)
+```{r}
+avg_salary_outside_nyc <- payroll_data %>%
+filter(!work_location_borough %in% c("Manhattan", "Brooklyn", "Queens", "Bronx", "Staten Island")) %>%
+summarize(avg_salary = mean(base_salary, na.rm = TRUE))
+avg_salary_outside_nyc
+```
 
 8.  **How much has the city’s aggregate payroll grown over the past 10 years?**
 
-`payroll_growth <- payroll_data %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`group_by(fiscal_year) %>% summarize(total_payroll = sum(base_salary + total_ot_paid + total_other_pay, na.rm = TRUE)) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`arrange(fiscal_year) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`mutate(payroll_growth = (total_payroll / lag(total_payroll) - 1) * 100,`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`payroll_growth = paste0(round(payroll_growth, 2), "%"))`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`payroll_growth`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-**Result:**
-
-![](images/clipboard-606587375.png)
+```{r}
+payroll_growth <- payroll_data %>%
+group_by(fiscal_year) %>% summarize(total_payroll = sum(base_salary + total_ot_paid + total_other_pay, na.rm = TRUE)) %>%
+arrange(fiscal_year) %>%
+mutate(payroll_growth = (total_payroll / lag(total_payroll) - 1) * 100,
+payroll_growth = paste0(round(payroll_growth, 2), "%"))
+payroll_growth
+```
 
 # Policy Analysis
 
@@ -276,95 +199,70 @@ This section answers critical payroll-related questions using **NYC Payroll Dat
 
 ### Compute the Mayor's salary per year
 
-`mayor_salary <- payroll_data %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
+```{r}
+mayor_salary <- payroll_data %>%
+  filter(title_description == "Mayor") %>%
+  select(fiscal_year, total_compensation)
+datatable(mayor_salary, options = list(scrollX = TRUE))
 
-`filter(title_description == "Mayor") %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`select(fiscal_year, total_compensation)`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`high_salaries <- payroll_data %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
+```
 
 ### Identify High Earners
 
-`high_salaries <- payroll_data %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`inner_join(mayor_salary, by = "fiscal_year", suffix = c("_emp", "_mayor")) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`filter(total_compensation_emp > total_compensation_mayor)`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-**Result:**
-
-![](images/clipboard-1412804773.png)
+```{r}
+high_salaries <- payroll_data %>%
+inner_join(mayor_salary, by = "fiscal_year", suffix = c("_emp", "_mayor")) %>%
+filter(total_compensation_emp > total_compensation_mayor)
+```
 
 ### Total Savings
 
-`total_savings <- sum(high_salaries$total_compensation_emp - high_salaries$total_compensation_mayor, na.rm = TRUE)`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
+```{r}
+total_savings <- sum(high_salaries$total_compensation_emp - high_salaries$total_compensation_mayor, na.rm = TRUE)
 
-`datatable( high_salaries %>% select(fiscal_year, first_name, last_name, title_description, agency_name, total_compensation_emp, total_compensation_mayor) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
+datatable(
+  high_salaries %>%
+    select(fiscal_year, first_name, last_name, title_description, agency_name, total_compensation_emp, total_compensation_mayor) %>%
+    slice_head(n = 100),  
+  options = list(scrollX = TRUE)
+)
 
-`slice_head(n = 100), options = list(scrollX = TRUE)`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-**Result:**
-
-![](images/clipboard-3454738161.png)
-
-![](images/clipboard-1393921063.png)
+```
 
 ## Policy 2: Increasing Staffing to Reduce Overtime Expenses
 
 ### Calculate total overtime
 
-`overtime_reduction <- payroll_data %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`group_by(agency_name, title_description) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`summarize( total_overtime_hours = sum(ot_hours, na.rm = TRUE), full_time_equivalent_needed = total_overtime_hours / 2000 ) %>% arrange(desc(total_overtime_hours))`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`datatable(overtime_reduction, options = list(scrollX = TRUE))`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-**Result:**
-
-![](images/clipboard-3391130787.png)
+```{r}
+overtime_reduction <- payroll_data %>%
+group_by(agency_name, title_description) %>%
+summarize( total_overtime_hours = sum(ot_hours, na.rm = TRUE), full_time_equivalent_needed = total_overtime_hours / 2000 ) %>% arrange(desc(total_overtime_hours))
+datatable(overtime_reduction, options = list(scrollX = TRUE))
+```
 
 ### Total Potential Savings
 
-`overtime_savings <- payroll_data %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`group_by(agency_name, title_description) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`summarize( overtime_cost = sum(1.5 * base_salary * ot_hours, na.rm = TRUE),`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`regular_cost = sum(base_salary * (ot_hours / 40), na.rm = TRUE),`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`potential_savings = overtime_cost - regular_cost ) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`arrange(desc(potential_savings))`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`datatable(overtime_savings, options = list(scrollX = TRUE))`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-**Result:**
-
-![](images/clipboard-3292972212.png)
+```{r}
+overtime_savings <- payroll_data %>%
+group_by(agency_name, title_description) %>%
+summarize( overtime_cost = sum(1.5 * base_salary * ot_hours, na.rm = TRUE),
+regular_cost = sum(base_salary * (ot_hours / 40), na.rm = TRUE),
+potential_savings = overtime_cost - regular_cost ) %>%
+arrange(desc(potential_savings))
+datatable(overtime_savings, options = list(scrollX = TRUE))
+```
 
 ### Total Agency Savings
 
-`agency_savings <- overtime_savings %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`group_by(agency_name) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`summarize( total_overtime_cost = sum(overtime_cost, na.rm = TRUE),`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`total_regular_cost = sum(regular_cost, na.rm = TRUE),`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`total_savings = sum(potential_savings, na.rm = TRUE) ) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`arrange(desc(total_savings))`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`datatable(agency_savings, options = list(scrollX = TRUE))`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-**Result:**
-
-![](images/clipboard-1570972245.png)
+```{r}
+agency_savings <- overtime_savings %>%
+group_by(agency_name) %>%
+summarize( total_overtime_cost = sum(overtime_cost, na.rm = TRUE),
+total_regular_cost = sum(regular_cost, na.rm = TRUE),
+total_savings = sum(potential_savings, na.rm = TRUE) ) %>%
+arrange(desc(total_savings))
+datatable(agency_savings, options = list(scrollX = TRUE))
+```
 
 ## Policy 3: Overtime Reduction Through Strategy Hiring
 
@@ -383,73 +281,56 @@ Many NYC agencies rely heavily on overtime (OT) to compensate for staffing short
 
 Find employees with excessive overtime hours (e.g., more than 500 OT hours per year).
 
-`high_overtime_employees <- payroll_data %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`filter(ot_hours > 500) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`group_by(title_description, agency_name) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`summarize( avg_overtime_hours = mean(ot_hours, na.rm = TRUE),`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`total_overtime_pay = sum(total_ot_paid, na.rm = TRUE), num_high_overtime_employees = n(),`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`avg_base_salary = mean(base_salary, na.rm = TRUE) ) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`arrange(desc(total_overtime_pay))`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-**Result:**
-
-![](images/clipboard-1167216310.png)
+```{r}
+high_overtime_employees <- payroll_data %>%
+filter(ot_hours > 500) %>%
+group_by(title_description, agency_name) %>%
+summarize( avg_overtime_hours = mean(ot_hours, na.rm = TRUE),
+total_overtime_pay = sum(total_ot_paid, na.rm = TRUE), num_high_overtime_employees = n(),
+avg_base_salary = mean(base_salary, na.rm = TRUE) ) %>%
+arrange(desc(total_overtime_pay))
+datatable(high_overtime_employees, options = list(scrollX = TRUE))
+```
 
 ### Compare Costs of Overtime vs. Hiring
 
 Assuming a standard 2,000-hour work year
 
-`estimated_new_hires <- high_overtime_employees %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`mutate( equivalent_full_time_positions = round(avg_overtime_hours / 2000, 1), total_new_hire_salary = equivalent_full_time_positions * avg_base_salary ) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`select(agency_name, title_description, num_high_overtime_employees, equivalent_full_time_positions, total_overtime_pay, total_new_hire_salary)`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-**Result:**
-
-![](images/clipboard-4258796401.png)
+```{r}
+estimated_new_hires <- high_overtime_employees %>%
+mutate( equivalent_full_time_positions = round(avg_overtime_hours / 2000, 1), total_new_hire_salary = equivalent_full_time_positions * avg_base_salary ) %>%
+select(agency_name, title_description, num_high_overtime_employees, equivalent_full_time_positions, total_overtime_pay, total_new_hire_salary)
+datatable(estimated_new_hires, options = list(scrollX = TRUE))
+```
 
 ### Calculate Potential Savings
 
 Compare the total overtime cost vs. the cost of hiring new employees
 
-`potential_savings <- estimated_new_hires %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`mutate(savings = total_overtime_pay - total_new_hire_salary) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`arrange(desc(savings))`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`datatable(potential_savings, options = list(scrollX = TRUE))`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-**Result:**
-
-![](images/clipboard-3973096500.png)
+```{r}
+potential_savings <- estimated_new_hires %>%
+mutate(savings = total_overtime_pay - total_new_hire_salary) %>%
+arrange(desc(savings))
+datatable(potential_savings, options = list(scrollX = TRUE))
+```
 
 ### Identify Agencies with Highest OT Dependency
 
 Find agencies where overtime reliance is highest
 
-`overtime_by_agency <- payroll_data %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
+```{r}
+library(dplyr)
 
-`group_by(agency_name) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
+overtime_by_agency <- payroll_data %>%
+  group_by(agency_name) %>%
+  summarize(
+    total_overtime_pay = sum(total_ot_paid, na.rm = TRUE),
+    total_base_salary = sum(base_salary, na.rm = TRUE),
+    ot_to_salary_ratio = total_overtime_pay / total_base_salary  # Corrected calculation
+  ) %>%
+  arrange(desc(ot_to_salary_ratio))
 
-`summarize( total_overtime_pay = sum(total_ot_paid, na.rm = TRUE),`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`total_base_salary = sum(base_salary, na.rm = TRUE),`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`ot_to_salary_ratio = total_ot_paid / base_salary ) %>%`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-`arrange(desc(ot_to_salary_ratio))`{style="padding: 0px 1px; border-width: 1px; border-style: solid; border-color: rgb(230, 230, 230) !important; border-image: initial; background-color: rgb(243, 243, 243) !important; font-family: \"Lucida Console\", monospace !important; font-size: 10pt !important;"}
-
-**Result:**
-
-![](images/clipboard-2810774840.png)
+```
 
 ### Recommendations
 
